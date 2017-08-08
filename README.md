@@ -71,4 +71,9 @@ cf login -a <pcf-api-url> --skip-ssl-validation --sso
 cf push springboot2  -f src/main/resources/manifest.yml -p target/springboot-0.0.1-SNAPSHOT.jar
 
 cf logs springboot2 --recent
+
+(If the manifest does not have wavefront-proxy service info, then the service can be bound to it 
+later using the following commands.)
+cf bind-service springboot2 wfproxy-service1
+cf restage springboot2
 ```
