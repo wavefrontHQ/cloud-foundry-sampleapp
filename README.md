@@ -66,7 +66,7 @@ wfReporter.start(10,  TimeUnit.SECONDS);
 ```
 mvn clean install -DskipTests
 
-cf login -a api.sys.wavefront.io --skip-ssl-validation --sso
+cf login -a <pcf-api-url> --skip-ssl-validation --sso
 
 cf push springboot2  -f src/main/resources/manifest.yml -p target/springboot-0.0.1-SNAPSHOT.jar
 
