@@ -16,15 +16,14 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @EnableCaching
 public class CacheConfiguration {
-    
-    @Bean
-    public CacheManager guavaCacheManager() {
-	GuavaCacheManager gCacheManager = new GuavaCacheManager("guaveCacheSearches");
-        gCacheManager.setCacheBuilder(
-                CacheBuilder.newBuilder()
-                        .softValues()
-                        .expireAfterWrite(10, TimeUnit.MINUTES)
-        );
-	return gCacheManager;
-    }
+
+  @Bean
+  public CacheManager guavaCacheManager() {
+    GuavaCacheManager gCacheManager = new GuavaCacheManager("guaveCacheSearches");
+    gCacheManager.setCacheBuilder(
+        CacheBuilder.newBuilder()
+                    .softValues()
+                    .expireAfterWrite(10, TimeUnit.MINUTES));
+    return gCacheManager;
+  }
 }

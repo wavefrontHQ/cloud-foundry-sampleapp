@@ -5,7 +5,7 @@ import java.util.List;
 import domain.SampleAppData;
 
 public interface SampleAppService {
+  public SampleAppData create(SampleAppData geolocation);
 
-    public SampleAppData create(SampleAppData geolocation);
-    public List<SampleAppData> findAll();
+  public List<SampleAppData> findAll();
 }  

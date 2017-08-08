@@ -10,27 +10,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 import domain.SampleAppData;
 import service.SampleAppService;
-import springboot.MetricSystem; 
+import springboot.MetricSystem;
 
-@RestController 
+@RestController
 @RequestMapping("/sampleapp")
 public class SampleAppController {
-    @Autowired
-    private SampleAppService service;
+  @Autowired
+  private SampleAppService service;
 
-    @Autowired
-    private MetricSystem metricSystem;
+  @Autowired
+  private MetricSystem metricSystem;
 
-    @RequestMapping(method = RequestMethod.POST, produces = "application/json",
-                    consumes = "application/json")
-    public SampleAppData create(@RequestBody SampleAppData geolocation) {
-        metricSystem.markSampleAppLastWriteTime();
-        metricSystem.incSampleAppWriteCount();
-        return service.create(geolocation);
-    }
+  @RequestMapping(method = RequestMethod.POST, produces = "application/json",
+      consumes = "application/json")
+  public SampleAppData create(@RequestBody SampleAppData geolocation) {
+    metricSystem.markSampleAppLastWriteTime();
+    metricSystem.incSampleAppWriteCount();
+    return service.create(geolocation);
+  }
 
-    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    public List<SampleAppData> findAll() {
-	return service.findAll();
-    } 
+  @RequestMapping(method = RequestMethod.GET, produces = "application/json")
+  public List<SampleAppData> findAll() {
+    return service.findAll();
+  }
 } 

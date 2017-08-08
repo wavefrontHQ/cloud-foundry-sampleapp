@@ -22,9 +22,9 @@ public class SampleAppServiceImpl implements SampleAppService {
   @Autowired
   private DataSource ds;
 
-  public SampleAppData create(SampleAppData geolocation) {
-   repository.addData(geolocation);
-   return geolocation; 
+  public SampleAppData create(SampleAppData appData) {
+   repository.addData(appData);
+   return appData;
   }
 
   public List<SampleAppData> findAll() {
@@ -33,6 +33,6 @@ public class SampleAppServiceImpl implements SampleAppService {
   
   @Cacheable("guavaCachesearches")
   public List<SampleAppData> fetch(String searchType, String keyword) {
-      return Lists.newArrayList();
+    return Lists.newArrayList();
   }
 }
