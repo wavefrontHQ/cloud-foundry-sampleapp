@@ -51,15 +51,20 @@ VCAP_SERVICES =
 
 ## Send metrics from the application
 
-Determine all the metrics, which have to be reported, and add them to the `metricRegistry`. Then use the `WavefrontReporter` to send them to the proxy.
+Most of the code is present in `MetricSystem.java` file. It determines all the metrics, which have
+ to be reported, and adds them to the `metricRegistry`. Then `WavefrontReporter` is used to send 
+ the metrics to the proxy.
 
 ```
 WavefrontReporter wfReporter = WavefrontReporter.forRegistry(metricRegistry)
     .withSource("springboot")
     .prefixedWith("springboot2")
-    .build(hostname, port);
+    .bindToCloudFoundryService("wavefront-proxy", true);
 wfReporter.start(10,  TimeUnit.SECONDS);
 ```
+The `wavefront-proxy` is the name of the wavefront proxy service running on PCF. The Wavefront 
+tile in should be used to install the wavefront proxy service. Once the tile is installed, the 
+default name of the wavefront proxy service will be `wavefront-proxy`. 
 
 ## Build and push the application
 

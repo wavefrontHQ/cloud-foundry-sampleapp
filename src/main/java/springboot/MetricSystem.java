@@ -26,6 +26,9 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricSet;
 import com.wavefront.integrations.metrics.WavefrontReporter;
 
+/**
+ * This class is responsible for identifying the metrics and sending them to wavefront.
+ */
 @Component
 public class MetricSystem {
 
@@ -48,6 +51,7 @@ public class MetricSystem {
 
   @PostConstruct
   public void init() {
+    // create new application level metrics and add them to metricRegistry
     writeRequestCount = metricRegistry.counter("writeRequestCount");
     metricRegistry.register("lastWriteTime", new Gauge<Long>() {
       @Override
@@ -56,38 +60,20 @@ public class MetricSystem {
       }
     });
 
+    // add the system metrics, which needs to be forwarded to wavefront, to metricRegistry
     addMetrics(systemPublicMetrics);
     addMetrics(cachePublicMetrics);
     addMetrics(dataSourcePublicMetrics);
     addMetrics(metricReaderPublicMetrics);
     addMetrics(tomcatPublicMetrics);
 
-    // check the env variables for services
-    String services = System.getenv("VCAP_SERVICES");
-    System.out.println("VCAP_SERVICES = " + services);
-    if (StringUtils.isNotBlank(services)) {
-      JSONObject json = new JSONObject(services);
-
-      JSONArray jsonArray = json.getJSONArray("wavefront-proxy");
-      JSONObject details = jsonArray.getJSONObject(0);
-      System.out.println("Details = " + details);
-
-      JSONObject credentials = details.getJSONObject("credentials");
-      String hostname = credentials.getString("hostname");
-      int port = credentials.getInt("port");
-      System.out.println("Hostname = " + hostname);
-      System.out.println("Port = " + port);
-      // send metrics to wavefront
-      WavefrontReporter wfReporter = WavefrontReporter.forRegistry(metricRegistry)
-                                                      .withSource("springboot")
-                                                      .prefixedWith("springboot3")
-                                                      .build(hostname, port);
-      wfReporter.start(10, TimeUnit.SECONDS);
-    }
-    else {
-      System.out.println("VCAP_SERVICES not found in env variables");
-      System.exit(-1);
-    }
+    // send all the metrics registered in metricRegistry to wavefront
+    WavefrontReporter wfReporter =
+        WavefrontReporter.forRegistry(metricRegistry)
+                         .withSource("springboot")
+                         .prefixedWith("springboot2")
+                         .bindToCloudFoundryService("wavefront-proxy", true);
+    wfReporter.start(10, TimeUnit.SECONDS);
   }
 
   private void addMetrics(PublicMetrics metrics) {
