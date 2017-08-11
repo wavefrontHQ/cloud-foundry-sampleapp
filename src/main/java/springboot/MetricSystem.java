@@ -78,22 +78,22 @@ public class MetricSystem {
 
   private void addMetrics(PublicMetrics metrics) {
     metricRegistry.register("spring.boot", (MetricSet) () -> {
-      final Map<String, Metric> gauges = new HashMap<String, Metric>();
+      final Map<String, Metric> metricsMap = new HashMap<String, Metric>();
 
-      for (final org.springframework.boot.actuate.metrics.Metric<?> springMetric :
+      for (final org.springframework.boot.actuate.metrics.Metric<?> metric :
           metrics.metrics()) {
 
-        gauges.put(springMetric.getName(), (Gauge<Object>) () -> {
+        metricsMap.put(metric.getName(), (Gauge<Object>) () -> {
 
           return metrics.metrics().stream()
-                        .filter(m -> StringUtils.equals(m.getName(), springMetric.getName()))
+                        .filter(m -> StringUtils.equals(m.getName(), metric.getName()))
                         .map(m -> m.getValue())
                         .findFirst()
                         .orElse(null);
 
         });
       }
-      return Collections.unmodifiableMap(gauges);
+      return Collections.unmodifiableMap(metricsMap);
     });
   }
 
