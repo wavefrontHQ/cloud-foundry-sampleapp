@@ -58,7 +58,7 @@ Most of the code is present in `MetricSystem.java` file. It determines all the m
 ```
 WavefrontReporter wfReporter = WavefrontReporter.forRegistry(metricRegistry)
     .withSource("springboot")
-    .prefixedWith("springboot2")
+    .prefixedWith("pcf")
     .bindToCloudFoundryService("wavefront-proxy", true);
 wfReporter.start(10,  TimeUnit.SECONDS);
 ```
@@ -66,6 +66,9 @@ The `wavefront-proxy` is the name of the wavefront proxy service running on PCF.
 tile in should be used to install the wavefront proxy service. Once the tile is installed, the 
 default name of the wavefront proxy service will be `wavefront-proxy`. 
 
+There are additional overloaded methods available in `WavefrontReporter` class, which can be used
+ to bind to wavefront proxy (e.g., `bindToCloudFoundryService()`).
+ 
 ## Build and push the application
 
 ```

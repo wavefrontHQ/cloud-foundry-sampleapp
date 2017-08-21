@@ -71,7 +71,7 @@ public class MetricSystem {
     WavefrontReporter wfReporter =
         WavefrontReporter.forRegistry(metricRegistry)
                          .withSource("springboot")
-                         .prefixedWith("springboot2")
+                         .prefixedWith("pcf")
                          .bindToCloudFoundryService("wavefront-proxy", true);
     wfReporter.start(10, TimeUnit.SECONDS);
   }
