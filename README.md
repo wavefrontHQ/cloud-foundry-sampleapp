@@ -51,16 +51,24 @@ VCAP_SERVICES =
 
 ## Send metrics from the application
 
-Determine all the metrics, which have to be reported, and add them to the `metricRegistry`. Then use the `WavefrontReporter` to send them to the proxy.
+Most of the code is present in `MetricSystem.java` file. It determines all the metrics, which have
+ to be reported, and adds them to the `metricRegistry`. Then `WavefrontReporter` is used to send 
+ the metrics to the proxy.
 
 ```
 WavefrontReporter wfReporter = WavefrontReporter.forRegistry(metricRegistry)
     .withSource("springboot")
-    .prefixedWith("springboot2")
-    .build(hostname, port);
+    .prefixedWith("pcf")
+    .bindToCloudFoundryService("wavefront-proxy", true);
 wfReporter.start(10,  TimeUnit.SECONDS);
 ```
+The `wavefront-proxy` is the name of the wavefront proxy service running on PCF. The Wavefront 
+tile in should be used to install the wavefront proxy service. Once the tile is installed, the 
+default name of the wavefront proxy service will be `wavefront-proxy`. 
 
+There are additional overloaded methods available in `WavefrontReporter` class, which can be used
+ to bind to wavefront proxy (e.g., `bindToCloudFoundryService()`).
+ 
 ## Build and push the application
 
 ```
@@ -71,4 +79,9 @@ cf login -a <pcf-api-url> --skip-ssl-validation --sso
 cf push springboot2  -f src/main/resources/manifest.yml -p target/springboot-0.0.1-SNAPSHOT.jar
 
 cf logs springboot2 --recent
+
+(If the manifest does not have wavefront-proxy service info, then the service can be bound to it 
+later using the following commands.)
+cf bind-service springboot2 wfproxy-service1
+cf restage springboot2
 ```
