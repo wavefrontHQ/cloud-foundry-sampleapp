@@ -1,0 +1,80 @@
+# application properties
+management:
+  security:
+    enabled: false
+  jolokia:
+    enabled: true
+    config:
+      debug: true
+      
+wavefront:
+  agent:
+    interval: 10
+    retry: 5
+  proxy:
+    # [standalone|pcf]
+    mode: standalone
+    # used when mode is pcf
+    servicename: wavefront-proxy
+    host: localhost
+    port: 2878
+  jolokia:
+    baseurl:  http://localhost:8080
+    endpoint: /jolokia/
+    prefix: jolokia
+    metrics:
+      -
+        name: jvm.heap.memory.usage
+        mbean: java.lang:type=Memory
+        attribute:
+          - HeapMemoryUsage
+          - NonHeapMemoryUsage
+      -
+        name: jvm.thread.count
+        mbean: java.lang:type=Threading
+        attribute:
+          - TotalStartedThreadCount
+          - ThreadCount
+          - DaemonThreadCount
+          - PeakThreadCount
+          - CurrentThreadUserTime
+          - CurrentThreadCpuTime
+      -
+        name: jvm.class.count
+        mbean: java.lang:type=ClassLoading
+        attribute:
+          - LoadedClassCount
+          - UnloadedClassCount
+          - TotalLoadedClassCount
+      - 
+        name: jvm.gc
+        mbean: java.lang:name=PS MarkSweep,type=GarbageCollector
+        attribute:
+          - CollectionTime
+          - CollectionCount
+      -
+        name: jvm.nio.direct
+        mbean: java.nio:name=direct,type=BufferPool
+        attribute:
+          - TotalCapacity
+          - MemoryUsed
+          - Count
+      -
+        name: jvm.nio.mapped
+        mbean: java.nio:name=mapped,type=BufferPool
+        attribute:
+          - TotalCapacity
+          - MemoryUsed
+          - Count
+      - 
+        name: tomcat.http_nio_8080
+        mbean: Tomcat:name="http-nio-8080",type=GlobalRequestProcessor
+        attribute:
+          - requestCount
+          - maxTime
+          - byteReceived
+          - byteSent
+          - processingTime
+          - errorCount
+
+            
