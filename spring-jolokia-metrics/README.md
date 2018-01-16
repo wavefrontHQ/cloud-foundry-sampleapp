@@ -211,4 +211,22 @@ When all the setups are properly done, you'll see the following log messages in 
 
 ## Checking the metrics
 
-As defined by default in application.yml, the metrics prefix is 'jolokia.' Look for the metrics starting with 'jolokia' in your wavefront UI's metrics browser, and you should be seeing the metrics flowing through. The source will be set as the jolokia servlet's agent ID, which is composed of IP address of the machine, and unique identification.
+As defined by default in application.yml, the metrics prefix is 'jolokia.' Look for the metrics starting with 'jolokia' in your wavefront UI's metrics browser, and you should be seeing the metrics flowing through. The source will be set as the jolokia servlet's agent ID, which is composed of IP address of the machine, and unique identification. The below metrics can be configured to either be added or removed from the generated metrics by editing your application.yml file.
+
+- jolokia.jvm.class
+- jolokia.jvm.gc
+- jolokia.jvm.heap
+- jolokia.jvm.nio
+- jolokia.jvm.thread
+- jolokia.tomcat.http_nio_8080
+
+The following additional metrics are enabled as part of the wavefront dropwizard metrics reporter that collects java performance metrics.
+
+- jvm.buffers
+- jvm.classes
+- jvm.current_time
+- jvm.fd_usage
+- jvm.gc
+- jvm.memory
+- jvm.thread-states
+- jvm.uptime
