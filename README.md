@@ -1,29 +1,36 @@
-# cloud-foundry-sampleapp
-Wavefront Cloud Foundry (Spring Boot) Sample Application
+# Wavefront Cloud Foundry Sample Spring Boot Application
 
-This project describes how to send metrics from a springboot app running on pivotal cloud foundry to wavefront proxy.
+This project describes how to send application metrics from a Spring Boot app running in PCF to a Wavefront proxy.
+
+## Requirements
+* A Wavefront proxy deployed in PCF as part of the [Wavefront by VMware Nozzle for PCF](https://network.pivotal.io/products/wavefront-nozzle/)
+* A Wavefront proxy service instance provisioned in PCF using the [Wavefront Service Broker for PCF](http://docs.pivotal.io/partners/wavefront-nozzle/installing.html#marketplace).
+* Java >= 1.8
+* Maven
 
 ## Wavefront Proxy
 
-Wavefront proxy service has to be started on PCF. In the rest of the document we assume the wavefront proxy service is called `wfproxy-service1`. It needs to be replaced with the service name appropriately.
+The rest of this document assumes the wavefront proxy service instance provisioned in PCF is called `wfproxy-service`. Replace the service name accordingly if different.
 
 ## Application Manifest
 
-A manifest file is used to provide parameters to a PCF application. The parameters are provided in a file called `manifest.yml`. The developer needs to identify the wavefront proxy running in PCF and add it to the manifest file. Here is a sample manifest file:-
+A `manifest.yml` file is used to provide parameters to a PCF application. The developer needs to identify the wavefront proxy running in PCF and add it to the manifest file.
+
+Here is a sample manifest file:
 
 ```
 ---
  services:
-  - wfproxy-service1
+  - wfproxy-service
 ```
 
-## POM File
+## Maven pom.xml File
 
-The pom file has to be updated to include the wavefrontHQ public repositories and dependencies (`dropwizard-metrics-3.1`). It should also include `spring-boot-maven-plugin` and `maven-shade-plugin`.
+Update the Maven `pom.xml` file to include the wavefrontHQ public repositories and dependencies `dropwizard-metrics-3.1`. It should also include `spring-boot-maven-plugin` and `maven-shade-plugin`.
 
 ## Parse VCAP_SERVICES
 
-The VCAP_SERVICES present in the manifest file (or externally bound to the application using `cf bind-services ...` command) are passed to the application as environment variable. It should be parsed to retrieve the wavefront-proxy `hostname` and `port`
+The `VCAP_SERVICES` present in the manifest file (or externally bound to the application using `cf bind-services ...` command) are passed to the application as environment variable. It is parsed to retrieve the wavefront-proxy `hostname` and `port`:
 
 ```
 VCAP_SERVICES =
@@ -31,15 +38,15 @@ VCAP_SERVICES =
   "wavefront-proxy": [
     {
       "credentials": {
-        "hostname": "tcp.wavefront.io",
-        "port": 1099
+        "hostname": "10.202.1.15",
+        "port": 2878
       },
       "syslog_drain_url": null,
       "volume_mounts": [],
       "label": "wavefront-proxy",
       "provider": null,
       "plan": "standard",
-      "name": "wfproxy-service1",
+      "name": "wfproxy-service",
       "tags": [
         "wavefront",
         "metrics"
@@ -51,9 +58,7 @@ VCAP_SERVICES =
 
 ## Send metrics from the application
 
-Most of the code is present in `MetricSystem.java` file. It determines all the metrics, which have
- to be reported, and adds them to the `metricRegistry`. Then `WavefrontReporter` is used to send 
- the metrics to the proxy.
+Most of the sample code is present in the `MetricSystem.java` file. It determines all the metrics to be reported and adds them to the `metricRegistry`. The `WavefrontReporter` is then used to send the metrics to the proxy.
 
 ```
 WavefrontReporter wfReporter = WavefrontReporter.forRegistry(metricRegistry)
@@ -62,26 +67,24 @@ WavefrontReporter wfReporter = WavefrontReporter.forRegistry(metricRegistry)
     .bindToCloudFoundryService("wavefront-proxy", true);
 wfReporter.start(10,  TimeUnit.SECONDS);
 ```
-The `wavefront-proxy` is the name of the wavefront proxy service running on PCF. The Wavefront 
-tile in should be used to install the wavefront proxy service. Once the tile is installed, the 
-default name of the wavefront proxy service will be `wavefront-proxy`. 
+The `wavefront-proxy` is the name of the wavefront proxy service running in PCF. The Wavefront
+tile should be used to install the wavefront proxy service. Once the tile is installed, the
+default name of the wavefront proxy service will be `wavefront-proxy`.
 
 There are additional overloaded methods available in `WavefrontReporter` class, which can be used
  to bind to wavefront proxy (e.g., `bindToCloudFoundryService()`).
- 
+
 ## Build and push the application
 
 ```
 mvn clean install -DskipTests
-
 cf login -a <pcf-api-url> --skip-ssl-validation --sso
-
-cf push springboot2  -f src/main/resources/manifest.yml -p target/springboot-0.0.1-SNAPSHOT.jar
-
-cf logs springboot2 --recent
-
-(If the manifest does not have wavefront-proxy service info, then the service can be bound to it 
-later using the following commands.)
-cf bind-service springboot2 wfproxy-service1
-cf restage springboot2
+cf push wavefront-sample-app -f src/main/resources/manifest.yml -p target/springboot-0.0.1-SNAPSHOT.jar
+cf logs wavefront-sample-app --recent
+```
+If the manifest does not have wavefront-proxy service info, then the service can be bound to it
+later using the following commands:
+```
+cf bind-service wavefront-sample-app wfproxy-service
+cf restage wavefront-sample-app
 ```
