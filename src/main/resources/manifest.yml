@@ -1,3 +1,5 @@
 ---
+applications:
+- name: wavefront-sample-app
   services:
    - wfproxy-service1
