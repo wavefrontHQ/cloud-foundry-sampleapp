@@ -42,7 +42,8 @@ public class MetricSystem {
   @Autowired
   private TomcatPublicMetrics tomcatPublicMetrics;
 
-  @Value("${spring.application.instance_id}")
+
+  @Value("${cf_instance_guid}")
   private String instanceId;
 
   // create some new metrics which can be reported
