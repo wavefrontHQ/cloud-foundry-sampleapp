@@ -2,4 +2,6 @@
 applications:
 - name: wavefront-sample-app
   services:
-   - wfproxy-service1
+  - wfproxy-service1
+  buildpacks:
+  - java_buildpack_offline

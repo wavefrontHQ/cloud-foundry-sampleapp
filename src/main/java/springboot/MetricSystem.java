@@ -1,16 +1,13 @@
 package springboot;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.CachePublicMetrics;
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
@@ -45,21 +42,25 @@ public class MetricSystem {
   @Autowired
   private TomcatPublicMetrics tomcatPublicMetrics;
 
+  @Value("${spring.application.instance_id}")
+  private String instanceId;
+
   // create some new metrics which can be reported
   private Counter writeRequestCount;
+  private List<Counter> coolRequesCount;
   private Long lastWriteTime;
 
   @PostConstruct
   public void init() {
     // create new application level metrics and add them to metricRegistry
     writeRequestCount = metricRegistry.counter("writeRequestCount");
-    metricRegistry.register("lastWriteTime", new Gauge<Long>() {
-      @Override
-      public Long getValue() {
-        return lastWriteTime;
-      }
-    });
-
+    coolRequesCount = new ArrayList<>();
+    for (int i = 0; i < 1000; i++) {
+      String name = "readRequestMark" + i;
+      System.out.println("The name is: " + name);
+      coolRequesCount.add(metricRegistry.counter(name));
+    }
+    metricRegistry.register("lastWriteTime", (Gauge<Long>) () -> lastWriteTime);
     // add the system metrics, which needs to be forwarded to wavefront, to metricRegistry
     addMetrics(systemPublicMetrics);
     addMetrics(cachePublicMetrics);
@@ -72,6 +73,7 @@ public class MetricSystem {
         WavefrontReporter.forRegistry(metricRegistry)
                          .withSource("springboot")
                          .prefixedWith("pcf")
+                .withPointTag("processId", instanceId)
                          .bindToCloudFoundryService("wavefront-proxy", true);
     wfReporter.start(10, TimeUnit.SECONDS);
   }
@@ -108,4 +110,7 @@ public class MetricSystem {
   public void incSampleAppWriteCount() {
     writeRequestCount.inc();
   }
-} 
+  public void incSampleAppReadCount() {
+    coolRequesCount.forEach(Counter::inc);
+  }
+}

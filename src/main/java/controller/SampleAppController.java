@@ -31,6 +31,7 @@ public class SampleAppController {
 
   @RequestMapping(method = RequestMethod.GET, produces = "application/json")
   public List<SampleAppData> findAll() {
+    metricSystem.incSampleAppReadCount();
     return service.findAll();
   }
 } 
