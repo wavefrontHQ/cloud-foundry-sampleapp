@@ -69,14 +69,17 @@ public class MetricSystem {
     addMetrics(metricReaderPublicMetrics);
     addMetrics(tomcatPublicMetrics);
 
+//    2023-01-06T16:38:57.88-0700 [APP/PROC/WEB/0] OUT Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'metricSystem': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'spring.application.instance_id' in value "${spring.application.instance_id}"
+
     // send all the metrics registered in metricRegistry to wavefront
     WavefrontReporter wfReporter =
         WavefrontReporter.forRegistry(metricRegistry)
                          .withSource("springboot")
                          .prefixedWith("pcf")
-                .withPointTag("processId", instanceId)
+                         .withPointTag("processId", instanceId)
+                         .withJvmMetrics()
                          .bindToCloudFoundryService("wavefront-proxy", true);
-    wfReporter.start(10, TimeUnit.SECONDS);
+    wfReporter.start(1, TimeUnit.SECONDS);
   }
 
   private void addMetrics(PublicMetrics metrics) {
