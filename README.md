@@ -1,3 +1,7 @@
+> **Warning**
+>
+> This repository is no longer maintained.
+
 # Wavefront Cloud Foundry Sample Spring Boot Application
 
 This project describes how to send application metrics from a Spring Boot app running in PCF to a Wavefront proxy.
