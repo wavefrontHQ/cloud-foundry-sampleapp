@@ -57,13 +57,19 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>32.0.0-jre</version>
+			<version>32.0.1-jre</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.wavefront</groupId>
 			<artifactId>dropwizard-metrics-3.1</artifactId>
 			<version>4.19</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro</artifactId>
+			<version>1.11.1</version>
 		</dependency>
 
 		<dependency>
